@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-const Home = () => {
+const Home = ({ filters }) => {
   const [offers, setOffers] = useState([]);
   const [page, setPage] = useState(1);
   const limit = 8;
@@ -10,16 +10,26 @@ const Home = () => {
   useEffect(() => {
     const fetchOffers = async () => {
       try {
+        const query = new URLSearchParams({
+          page,
+          limit,
+          ...(filters.title && { title: filters.title }),
+          ...(filters.priceMin && { priceMin: filters.priceMin }),
+          ...(filters.priceMax && { priceMax: filters.priceMax }),
+          ...(filters.sort && { sort: filters.sort }),
+        }).toString();
+
         const response = await axios.get(
-          `https://lereacteur-vinted-api.herokuapp.com/offers?page=${page}&limit=${limit}`
+          `https://lereacteur-vinted-api.herokuapp.com/offers?${query}`
         );
         setOffers(response.data.offers);
       } catch (error) {
         console.error("Error fetching offers:", error);
       }
     };
+
     fetchOffers();
-  }, [page]);
+  }, [filters, page]);
 
   return (
     <div className="home">
