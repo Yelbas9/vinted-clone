@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 
 const Login = ({ setUser }) => {
@@ -8,6 +8,7 @@ const Login = ({ setUser }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -16,21 +17,15 @@ const Login = ({ setUser }) => {
     try {
       const response = await axios.post(
         "https://lereacteur-vinted-api.herokuapp.com/user/login",
-        {
-          email,
-          password,
-        }
+        { email, password }
       );
 
       if (response.data.token) {
-        // Enregistrer le token dans les cookies
         Cookies.set("userToken", response.data.token, { expires: 7 });
-
-        // Mettre à jour l'état utilisateur
         setUser(response.data.token);
 
-        // Rediriger vers la page d'accueil
-        navigate("/");
+        const redirectTo = location.state?.redirectTo || "/";
+        navigate(redirectTo);
       }
     } catch (err) {
       setError("Email ou mot de passe incorrect.");
@@ -56,7 +51,9 @@ const Login = ({ setUser }) => {
           required
         />
         {error && <p className="error-message">{error}</p>}
-        <button type="submit">Se connecter</button>
+        <button type="submit" className="login-button">
+          Se connecter
+        </button>
       </form>
       <p className="login-signup-redirect">
         Pas encore de compte ? <a href="/signup">Inscris-toi !</a>

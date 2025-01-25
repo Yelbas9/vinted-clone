@@ -20,18 +20,15 @@ const Signup = () => {
       const response = await axios.post(
         "https://lereacteur-vinted-api.herokuapp.com/user/signup",
         {
-          email,
           username,
+          email,
           password,
           newsletter,
         }
       );
 
       if (response.data.token) {
-        // Sauvegarder le token dans les cookies
         Cookies.set("userToken", response.data.token, { expires: 7 });
-
-        // Rediriger l'utilisateur vers la page d'accueil
         navigate("/");
       }
     } catch (err) {
@@ -64,7 +61,7 @@ const Signup = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <label>
+        <label className="newsletter-label">
           <input
             type="checkbox"
             checked={newsletter}
@@ -78,7 +75,9 @@ const Signup = () => {
           avoir au moins 18 ans.
         </p>
         {error && <p className="error-message">{error}</p>}
-        <button type="submit">S'inscrire</button>
+        <button type="submit" className="signup-button">
+          S'inscrire
+        </button>
       </form>
       <p className="signup-login-redirect">
         Tu as déjà un compte ? <a href="/login">Connecte-toi !</a>

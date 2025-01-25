@@ -3,14 +3,14 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 
-const LoginModal = ({ isOpen, onClose, setUser }) => {
+const LoginModal = ({ isOpen, onClose, setUser, redirectAfterLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate(); // Hook pour gérer la navigation
+  const navigate = useNavigate();
 
   if (!isOpen) {
-    return null; // Si la modal est fermée, ne rien afficher
+    return null;
   }
 
   const handleSubmit = async (event) => {
@@ -27,16 +27,12 @@ const LoginModal = ({ isOpen, onClose, setUser }) => {
       );
 
       if (response.data.token) {
-        // Enregistrer le token dans les cookies
         Cookies.set("userToken", response.data.token, { expires: 7 });
 
-        // Mettre à jour l'état utilisateur
         setUser(response.data.token);
 
-        // Rediriger vers la page d'accueil
-        navigate("/");
+        navigate(redirectAfterLogin || "/");
 
-        // Fermer la modal
         onClose();
       }
     } catch (err) {

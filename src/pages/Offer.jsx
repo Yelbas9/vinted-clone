@@ -1,30 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Carousel from "react-multi-carousel"; // Import du carousel
-import "react-multi-carousel/lib/styles.css"; // Styles pour le carousel
 
-const Offer = () => {
-  const { id } = useParams(); // Récupère l'ID de l'annonce dans l'URL
+const Offer = ({ userToken }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [offer, setOffer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
-  // Responsive settings for react-multi-carousel
-  const responsive = {
-    desktop: {
-      breakpoint: { max: 3000, min: 1024 },
-      items: 1,
-    },
-    tablet: {
-      breakpoint: { max: 1024, min: 464 },
-      items: 1,
-    },
-    mobile: {
-      breakpoint: { max: 464, min: 0 },
-      items: 1,
-    },
-  };
 
   useEffect(() => {
     const fetchOffer = async () => {
@@ -43,38 +26,40 @@ const Offer = () => {
     fetchOffer();
   }, [id]);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  const handleBuy = () => {
+    if (userToken) {
+      navigate("/payment", {
+        state: { title: offer.product_name, price: offer.product_price },
+      });
+    } else {
+      navigate("/login", {
+        state: { redirectTo: `/offer/${id}` },
+      });
+    }
+  };
 
-  if (error) {
-    return <p>Something went wrong. Please try again later.</p>;
-  }
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Something went wrong. Please try again later.</p>;
 
   return (
     <div className="offer-page">
       <div className="offer-container">
-        {/* Product Images with Carousel */}
         <div className="offer-image">
-          <Carousel responsive={responsive}>
-            {offer.product_pictures.length > 0 ? (
-              offer.product_pictures.map((picture, index) => (
-                <img
-                  key={index}
-                  src={picture.secure_url}
-                  alt={`Product ${index}`}
-                />
-              ))
-            ) : (
-              <img
-                src={offer.product_image.secure_url}
-                alt={offer.product_name}
-              />
-            )}
-          </Carousel>
+          {offer.product_pictures.length > 0 ? (
+            <img
+              src={offer.product_pictures[0].secure_url}
+              alt={offer.product_name}
+              className="single-image"
+            />
+          ) : (
+            <img
+              src={offer.product_image.secure_url}
+              alt={offer.product_name}
+              className="single-image"
+            />
+          )}
         </div>
 
-        {/* Product Details */}
         <div className="offer-details">
           <p className="offer-price">{offer.product_price} €</p>
           <div className="offer-meta">
@@ -86,13 +71,11 @@ const Offer = () => {
             ))}
           </div>
 
-          {/* Product Description */}
           <div className="offer-description">
             <h3>{offer.product_name}</h3>
             <p>{offer.product_description}</p>
           </div>
 
-          {/* Owner Info */}
           <div className="offer-owner">
             <div className="owner-avatar">
               <img
@@ -106,8 +89,9 @@ const Offer = () => {
             <p>{offer.owner.account.username}</p>
           </div>
 
-          {/* Buy Button */}
-          <button className="buy-button">Acheter</button>
+          <button className="buy-button" onClick={handleBuy}>
+            Acheter
+          </button>
         </div>
       </div>
     </div>
