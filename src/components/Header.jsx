@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import LoginModal from "./LoginModal";
 import { Range } from "react-range";
+import logo from "/public/images/vinted.svg";
 
 const Header = ({ userToken, setUser, setFilters }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -48,7 +49,7 @@ const Header = ({ userToken, setUser, setFilters }) => {
   return (
     <header className="header">
       <Link to="/" className="logo">
-        <img src="/public/images/vinted.svg" alt="Vinted" />
+        <img src={logo} alt="vinted" />;
       </Link>
 
       <div className="search-container">
