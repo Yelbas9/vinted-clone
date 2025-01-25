@@ -48,7 +48,7 @@ const Header = ({ userToken, setUser, setFilters }) => {
   return (
     <header className="header">
       <Link to="/" className="logo">
-        <img src="./src/assets/vinted.svg" alt="Vinted" />
+        <img src="/public/images/vinted.svg" alt="Vinted" />
       </Link>
 
       <div className="search-container">
